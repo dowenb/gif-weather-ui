@@ -20,7 +20,7 @@ export default {
   },
   methods: {
     getGifs() {
-      let endpoint = "http://localhost:8000";
+      let endpoint = "https://gif-weather.herokuapp.com";
       let url = `${endpoint}/${
         this.searchTerm
       }`;
