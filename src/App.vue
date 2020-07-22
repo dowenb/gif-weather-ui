@@ -5,7 +5,8 @@
     <input v-model="searchTerm" type="text">
     <button class="button" @click=getGifs()>Get my Weather GIF!</button>
     <div class="gif-container">
-      <img v-for="gif in gifs" :src="gif" :key="gif.id">
+      <img :src="gif" :alt="title">
+      <p> {{ title }} </p>
     </div>
   </div>
 </template>
@@ -15,7 +16,8 @@ export default {
   data() {
     return {
       searchTerm: "",
-      gifs: []
+      gif: "",
+      title: ""
     };
   },
   methods: {
@@ -34,9 +36,12 @@ export default {
         .catch(err => console.log(err));
     },
     buildGifs(json) {
-      this.gifs = json.data.map(gif => gif.id).map(gifId => {
-        return `https://media.giphy.com/media/${gifId}/giphy.gif`;
-      });
+      // this.title = json.data[0].title;
+      this.title = json.data[0].title;
+      this.gif = `https://media.giphy.com/media/${json.data[0].id}/giphy.gif`;
+      // this.gif = json.data.map(gif => gif.id).map(gifId => {
+      //   return `https://media.giphy.com/media/${gifId}/giphy.gif`;
+      // });
     }
   }
 };
