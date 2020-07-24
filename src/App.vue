@@ -72,7 +72,12 @@ export default {
 </script>
 
 <style>
+body{
+  text-align: center;
+}
 #app {
+  max-width: 653px;
+  display: inline-block;
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
