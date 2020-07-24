@@ -1,9 +1,13 @@
 <template>
   <div id="app">
-    <h1>GIF Weather</h1>
-    <p>Enter a location to see a GIF for the current weather. For example try London.</p>
-    <input v-model="searchTerm" type="text">
-    <button class="button" @click=getGifs()>Get my Weather GIF!</button>
+      <loading :active.sync="isLoading" 
+      :can-cancel="true" 
+      :on-cancel="onCancel"
+      :is-full-page="fullPage">
+    </loading>
+    <img src="gif-weather.png" alt="GIF Weather">
+    <input v-model="searchTerm" type="text" v-on:keyup.enter="getGifs()" placeholder="Enter a location.">
+    <button class="button" @click=getGifs()>Get GIF Weather</button>
     <div class="gif-container">
       <img :src="gif" :alt="title">
       <p> {{ title }} </p>
@@ -12,16 +16,26 @@
 </template>
 
 <script>
+// Import vue-loading-overlay and style
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
+
 export default {
   data() {
     return {
+      isLoading: false,
+      fullPage: true,
       searchTerm: "",
       gif: "",
       title: ""
     };
   },
+  components: {
+    Loading
+  },
   methods: {
     getGifs() {
+      this.isLoading = true;
       let endpoint = "https://gif-weather.herokuapp.com";
       let url = `${endpoint}/${
         this.searchTerm
@@ -33,15 +47,25 @@ export default {
         .then(json => {
           this.buildGifs(json);
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+          this.isLoading = false;
+          console.log('Cannot find weather for ' + this.searchTerm);
+          console.log(err);
+          this.handleError();
+        });
     },
     buildGifs(json) {
-      // this.title = json.data[0].title;
       this.title = json.data[0].title;
       this.gif = `https://media.giphy.com/media/${json.data[0].id}/giphy.gif`;
-      // this.gif = json.data.map(gif => gif.id).map(gifId => {
-      //   return `https://media.giphy.com/media/${gifId}/giphy.gif`;
-      // });
+      this.isLoading = false;
+    },
+    handleError(){
+      this.title = 'Cannot find weather for ' + this.searchTerm;
+      this.gif = 'weather-not-found.png';
+      this.isLoading = false;
+    },
+    onCancel() {
+      console.log('User cancelled the loader.')
     }
   }
 };
@@ -57,8 +81,9 @@ export default {
   margin-top: 60px;
 }
 input {
+  width: 80%;
   padding: 5px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 .button {
   background-color: rgb(0, 172, 0);
@@ -72,9 +97,13 @@ input {
   background-color: rgb(0, 148, 0);
 }
 .gif-container {
-  margin-top: 30px;
+  margin-top: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+img {
+  max-width: 100%;
+  height: auto;
 }
 </style>
