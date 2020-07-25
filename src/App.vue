@@ -9,7 +9,7 @@
     <input v-model="searchTerm" type="text" v-on:keyup.enter="getGifs()" placeholder="Enter a location.">
     <button class="button" @click=getGifs()>Get GIF Weather</button>
     <div class="gif-container">
-      <img :src="gif" :alt="title">
+      <img :src="gif" :alt="title" @load="gifLoaded">
       <p> {{ title }} </p>
     </div>
   </div>
@@ -57,7 +57,6 @@ export default {
     buildGifs(json) {
       this.title = json.data[0].title;
       this.gif = `https://media.giphy.com/media/${json.data[0].id}/giphy.gif`;
-      this.isLoading = false;
     },
     handleError(){
       this.title = 'Cannot find weather for ' + this.searchTerm;
@@ -66,6 +65,9 @@ export default {
     },
     onCancel() {
       console.log('User cancelled the loader.')
+    },
+    gifLoaded(){
+      this.isLoading = false;
     }
   }
 };
